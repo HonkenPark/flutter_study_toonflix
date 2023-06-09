@@ -23,5 +23,15 @@ doc/api/
 *.js.deps
 *.js.map
 
+.dart_tool/
+.idea/
+android/
+ios/
+linux/
+web/
+windows/
+build/
+.vscode/
+
 .flutter-plugins
 .flutter-plugins-dependencies
