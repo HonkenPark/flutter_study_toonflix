@@ -9,17 +9,43 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int totalSeconds = 1500;
+  static const countMax = 1500;
+  int pomodoroCount = 0;
+  int totalSeconds = countMax;
+  bool isRunning = false;
   late Timer timer;
 
   void onTick(Timer asdf) {
     setState(() {
       totalSeconds -= 1;
     });
+    if (totalSeconds == 0) {
+      timer.cancel();
+      setState(() {
+        totalSeconds = countMax;
+        isRunning = false;
+        pomodoroCount += 1;
+      });
+    }
   }
 
   void onStartPressed() {
+    setState(() {
+      isRunning = true;
+    });
     timer = Timer.periodic(const Duration(seconds: 1), onTick);
+  }
+
+  void onPausePressed() {
+    timer.cancel();
+    setState(() {
+      isRunning = false;
+    });
+  }
+
+  String format(int seconds) {
+    var duration = Duration(seconds: seconds);
+    return duration.toString().split(".").first.substring(2, 7);
   }
 
   @override
@@ -33,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               alignment: Alignment.bottomCenter,
               child: Text(
-                '$totalSeconds',
+                format(totalSeconds),
                 style: TextStyle(
                   color: Theme.of(context).cardColor,
                   fontSize: 89,
@@ -46,8 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
             flex: 3,
             child: Center(
               child: IconButton(
-                onPressed: onStartPressed,
-                icon: const Icon(Icons.play_circle_outline),
+                onPressed: isRunning ? onPausePressed : onStartPressed,
+                icon: Icon(isRunning
+                    ? Icons.pause_circle_outlined
+                    : Icons.play_circle_outline),
                 iconSize: 120,
                 color: Theme.of(context).cardColor,
               ),
@@ -79,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Text(
-                          '0',
+                          '$pomodoroCount',
                           style: TextStyle(
                             fontSize: 58,
                             fontWeight: FontWeight.w600,
